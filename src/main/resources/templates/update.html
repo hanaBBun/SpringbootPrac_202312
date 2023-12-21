@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>update</title>
+</head>
+<body>
+	<!-- 사용자의 수정사항에 대한 입력을 받기 위한 form 태그
+	    입력받지 않을 모든 정보들을 함께 적어줘야! (hidden) -->
+	<!-- 기타 살펴볼 사항
+		1. readonly : 사용자가 볼 수 있지만 수정 불가능 
+		2. id 속성 : HTML 요소를 고유하게 식별하기 위한 속성. 자바스크립트에서 작업 가능
+		3. th: value와 th:text의 차이점
+			- th:value는 폼 입력 필드의 값을 설정할 때 사용. 서버에 전달된 모델의 속성과 동기화됨.
+			- th:text는 텍스트 내용을 설정할 때 사용. 주로 텍스트 표시 요소에 사용됨.
+		4. textarea의 cols, rows 는 텍스트 영역의 가로/세로 길이(문자 수, 행 수)를 나타냄 -->
+	<form action="/board/update" method="post" name="updateForm">
+		<input type="hidden" name="id" th:value="${boardUpdate.id}" />
+		writer : <input type="text" name="boardWriter" th:value="${boardUpdate.boardWriter}" readonly /> <br>
+		<!-- 비밀번호를 간단하게라도 검증하기 위해 th:value 없음 -->
+		pass : <input type="text" name="boardPass" id="boardPass" /> <br>
+		title : <input type="text" name="boardTitle" th:value="${boardUpdate.boardTitle}" /> <br>
+		contents : <textarea name="boardContents" cols="30" rows="10" th:text="${boardUpdate.boardContents}" /> <br>
+		<input type="hidden" name="boardHits" th:value="${boardUpdate.boardHits}" /> 
+		<input type="button" value="글수정" onclick="boardUpdate()" />
+	</form>
+</body>
+<script th:inline="javascript">
+	const boardUpdate = () => {
+		const pass = [[${boardUpdate.boardPass}]];
+		const inputPass = document.getElementById("boardPass").value;
+		if (pass == inputPass) {
+			// updateForm이름을 가진 폼태그를 전송하겠다!
+			document.updateForm.submit();
+		} else {
+			alert("비밀번호가 일치하지 않습니다.");
+		}
+	}
+</script>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>list</title>
+</head>
+<body>
+	<table>
+		<tr>
+			<!--<th>id</th>-->
+			<th>num</th>
+			<th>title</th>
+			<th>writer</th>
+			<th>date</th>
+			<th>hits</th>
+		</tr>
+		<!-- 참고
+			1. <td th:text="${board.id}"></td> : 게시물이 삭제되었을 때 목록의 숫자는 원래 디비 id 그대로 있는 문제
+			   -> list 에서만 createdTime 순으로 새로운 목록번호 생성하자 
+			2. 제목을 클릭하면 상세 조회 페이지로 들어가도록! 하기 위해 a태그 사용 
+			   컨트롤러에서 가져온 값들을 경로 상에 제대로 표현해주려면 '|' 로 감싸주면 좋다!
+			3. boardCreatedTime을 특정 형식으로 포맷팅하기 위해 *{} 사용
+			   #를 사용해 명령어를 나타내므로 '#' 생략하면 오류남! -->
+		<tr th:each="board, iterStat : ${boardList}">
+			<td th:text="${iterStat.count}"></td>
+			<td><a th:href="@{|/board/${board.id}|}" th:text="${board.boardTitle}"></a></td>
+			<td th:text="${board.boardWriter}"></td>
+			<td th:text="*{#temporals.format(board.boardCreatedTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+			<td th:text="${board.boardHits}"></td>
+		</tr>
+	</table>
+</body>
+</html>

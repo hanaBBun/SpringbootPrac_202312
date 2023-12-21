@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>paging</title>
+</head>
+<body>
+	<button onclick="saveReq()">글작성</button>
+	
+	<table>
+	    <tr>
+	        <th>id</th>
+	        <th>title</th>
+	        <th>writer</th>
+	        <th>date</th>
+	        <th>hits</th>
+	    </tr>
+	    <!-- board.boardTitle의 a 태그 	
+	    	- Page 객체인 boardList의 number()는 현재 페이지 번호를 가져오는데, 0부터 시작하므로 + 1을 해준다. 
+	    	  고로 (page=${boardList.number() + 1})은 현재 페이지 번호를 나타내어, 페이지 번호를 포함한 URL을 생성한다.
+	    	  -> th:href의 중괄호 안에서 괄호 안에 값을 넣어주면 query parameter로 전송되는 형태다.
+	    	- '|'는 변수 또는 표현식과 일반 텍스트를 구분하는 역할. 반드시 필요한 건 아님. -->
+		<!-- boardList.size는 페이지당 표시되는 항목의 수를 뜻함 -->
+	    <tr th:each="board, iterStat : ${boardList}">
+	        <!--<td th:text="${board.id}"></td>-->
+	        <td th:text="${(boardList.number * boardList.size) + iterStat.count}"></td>
+	        <td><a th:href="@{|/board/${board.id}|(page=${boardList.number + 1})}" th:text="${board.boardTitle}"></a></td>
+	        <td th:text="${board.boardWriter}"></td>
+	        <td th:text="*{#temporals.format(board.boardCreatedTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+	        <td th:text="${board.boardHits}"></td>
+	    </tr>
+	</table>
+	
+	<!-- 첫번째 페이지로 이동 -->
+	<!-- /board/paging?page=1 -->
+	<a th:href="@{/board/paging(page=1)}">First</a>
+	
+	<!-- 이전 링크 활성화 비활성화 -->
+	<!-- boardList.Number() 사용자에게 2페이지, getNumber() = 1 (0부터 시작하므로) -->
+	<a th:href="${boardList.first} ? '#' : @{/board/paging(page=${boardList.number})}">prev</a>
+
+	<!-- 페이지 번호 링크 (현재 페이지는 숫자만)
+		for(int page = startPage; page <= endPage; page++) -->
+	<span th:each="page: ${#numbers.sequence(startPage, endPage)}">
+		<!-- 현재 페이지는 링크 없이 숫자만 -->
+		<span th:if="${page == boardList.number + 1}" th:text="${page}"></span>
+		<!-- 현재 페이지가 아닌 페이지 번호는 링크를 보여줌 -->
+		<span th:unless="${page == boardList.number + 1}">
+			<a th:href="@{/board/paging(page=${page})}" th:text="${page}"></a>
+		</span>
+	</span>
+
+	<!-- 다음 링크 활성화 비활성화 -->
+	<a th:href="${boardList.last} ? '#' : @{/board/paging(page=${boardList.number + 2})}">next</a>
+	<!-- 마지막 페이지로 이동 -->
+	<a th:href="@{/board/paging(page=${boardList.totalPages})}">Last</a>
+</body>
+<script>
+	const saveReq = () => {
+		location.href = "/board/save";
+	}
+</script>
+</html>
