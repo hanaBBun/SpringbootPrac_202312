@@ -56,7 +56,22 @@
 
 	<!-- 댓글 출력 부분 -->
 <div id="comment-list">
-
+	<!-- 댓글 목록 요청에 성공하면 script에서 output 변수에 담겨, innerHTML을 통해 여기 놓이게 된다. -->
+	<!-- 아래 태그는 댓글 목록이 채워질 틀로, output에 적은 html 구조와 같아야 에러가 없다. -->
+	<table>
+		<tr>
+			<th>댓글번호</th>
+			<th>작성자</th>
+			<th>내용</th>
+			<th>작성시간</th>
+		</tr>
+		<tr th:each="comment : ${commentList}">
+			<td th:text="${comment.id}"></td>
+			<td th:text="${comment.commentWriter}"></td>
+			<td th:text="${comment.commentContents}"></td>
+			<td th:text="${comment.commentCreatedTime}"></td>
+		</tr>
+	</table>
 </div>
 
 </body>
@@ -103,11 +118,49 @@
 			},
 			success: function(res) {
 				console.log("요청 성공", res);
+				// 계속 데이터가 추가되니 반드시 let으로 선언해야 한다.
+				let output = "<table>";
+				output += "<tr><th>댓글번호</th>";
+				output += "<th>작성자</th>";
+				output += "<th>내용</th>";
+				output += "<th>작성시간</th></tr>";
+				for (let i in res) {
+					output += "<tr>";
+					output += "<td>" + res[i].id + "</td>";
+					output += "<td>" + res[i].commentWriter + "</td>";
+					output += "<td>" + res[i].commentContents + "</td>";
+					const formattedTime = formatTime(res[i].commentCreatedTime);
+					output += "<td>" + formattedTime + "</td>";
+					output += "</tr>";
+				}
+				output += "</table>";
+				// 일종의 덮어쓰기
+				document.getElementById('comment-list').innerHTML = output;
+				// 작성 및 출력이 끝나면, input 태그인 두 상자를 원상태로 비우겠다는 의미.
+				document.getElementById('commentWriter').value = '';
+				document.getElementById('commentContents').value = '';
 			},
 			error: function(err) {
 				console.log("요청 실패", err);
 			}
 		});
+
+		// 시간 데이터 형식을 변환하는 함수
+		// 매번 출력 때마다 변환하면 코드 낭비가 심하니,
+		// db에 저장할 때부터 형식을 바꿔두는 편이 낫겠다. 이런 방식도 있다고 참고하기.
+		function formatTime(time) {
+			const date = new Date(time);
+			const year = date.getFullYear();
+			const month = String(date.getMonth() + 1).padStart(2, '0');
+			const day = String(date.getDate()).padStart(2, '0');
+			const hours = String(date.getHours()).padStart(2, '0');
+			const minutes = String(date.getMinutes()).padStart(2, '0');
+			const seconds = String(date.getSeconds()).padStart(2, '0');
+
+			// ${} : 문자열 안에 변수나 표현식을 삽입하는 템플릿 리터럴
+			// 백틱(`)을 사용해 템플릿 리터럴을 사용할 수 있다. 작은 따옴표와의 혼동 주의!!
+			return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+		}
 	}
 </script>
 </html>
