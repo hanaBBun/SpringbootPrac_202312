@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.xml.stream.events.Comment;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +45,13 @@ public class BoardEntity extends BaseEntity {
 			orphanRemoval = true,
 			fetch = FetchType.LAZY)
 	private List<BoardFileEntity> boardFileEntityList = new ArrayList<>();
+
+	@OneToMany(
+			mappedBy = "boardEntity",
+			cascade = CascadeType.REMOVE,
+			orphanRemoval = true,
+			fetch = FetchType.LAZY)
+	private List<CommentEntity> commentEntityList = new ArrayList<>();
 
 	// 파일이 없는 경우 - board 테이블은 파일의 유무 정보만 저장하면 된다.
 	public static BoardEntity toSaveEntity(BoardDTO boardDTO) {

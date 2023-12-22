@@ -30,32 +30,12 @@
      - BoardEntity
      - BoardFileEntity, BoardFileRepository 추가
      - detail.html
+8. 댓글 처리하기
+   - 글 상세 페이지에서 댓글 입력 (ajax)
+   - 상세조회할 때 기존에 작성된 댓글목록이 보임
+   - 댓글을 입력하면 기존 댓글 목록에 새로 작성한 댓글 추가
+   - 댓글용 테이블 필요
+
    
-
-- board_table(부모) - board_file_table(자식)
-... 부모는 하나, 여러 개의 자식이 올 수 있다!
-create table board_table
-(
-id              bigint auto_increment primary key,
-created_time    datetime        null,
-updated_time    datetime        null,
-board_contents  varchar(500)    null,
-board_hits      int             null,
-board_pass      varchar(255)    null,
-board_title     varchar(255)    null,
-board_writer    varchar(20)     not null,
-file_attached   int             null
-);
-
-create table board_file_table
-(
-id              bigint auto_increment primary key,
-created_time        datetime        null,
-updated_time        datetime        null,
-original_file_name  varchar(255)    null,
-stored_file_name    varchar(255)    null,
-board_id            bigint          null,
-constraint FKcfxqly70ddd02xbou0jxgh4o3
-    foreign key (board_id) references board_table (id) on delete cascade
-);
+   
    
